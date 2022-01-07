@@ -1,0 +1,151 @@
+.container{
+    width: 80%;
+    margin: 0 auto;
+}
+
+.product-list-header{
+    padding-top: 35px;
+    border-bottom: solid;
+    width: 100%;
+    display: inline-block;
+}
+.product-list-header .header {
+    width: 33%;
+    float: left;
+    font-size: 25px;
+    font-weight: bold;
+    display: inline-block;
+}
+.right-side.header{
+    float: right;
+    text-align: right;
+}
+.right-side.header select{
+    width: 66%;
+    float: left;
+}
+.right-side.header .action{
+    width: 34%;
+    float: left;
+    display: inline-block;
+}
+.left-side.header{
+    float: left;
+}
+.product-list-container{
+    width: 100%;
+    display: inline-block;
+}
+#message {
+    width: 100%;
+    display: inline-block;
+}
+#message.error {
+    margin: 10px 0 10px;
+    padding: 12px 13px 12px 10px;
+    display: block;
+    font-size: 1.3rem;
+    background: #fae5e5;
+    color: #e02b27;
+    position: relative;
+}
+#message.success {
+    margin: 10px 0 10px;
+    padding: 12px 13px 12px 10px;
+    display: block;
+    font-size: 1.3rem;
+    background: #e5efe5;
+    color: #006400;
+    position: relative;
+}
+.no_item.info {
+    margin: 10px 0 10px;
+    padding: 12px 13px 12px 10px;
+    display: block;
+    font-size: 1.3rem;
+    background: #fdf0d5;
+    color: #6f4400;
+    position: relative;
+}
+.product-container {
+    width: 23%;
+    float: left;
+    border: 1px solid;
+    padding: 3px;
+    margin: 10px;
+    list-style: none;
+    display: inline-block;
+    min-height: 180px;
+    height: auto;
+    overflow: hidden;
+}
+.product-container li {
+    list-style: none;
+    font-size: 19px;
+    text-align: center;
+    line-height: 25px;
+}
+.product-container ul{
+    width: 70%;
+}
+.delete-checkbox{
+    width: 25px;
+    height: 25px;
+}
+.product-attr {
+    width: 100%;
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+.loader {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    background: rgb(0 0 0 / 10%);
+}
+.loader img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+}
+.no-display{
+    display: none;
+}
+
+.middle{
+    text-align: center;
+}
+button{
+    font-size: 20px;
+}
+select{
+    width: 79%;
+    height: 31px;
+    font-size: 18px;
+}
+.product-add-container label {
+    font-size: 18px;
+    float: left;
+    display: inline-block;
+    width: 100%;
+    margin: 8px 0px 8px 0px;
+    font-weight: bold;
+}
+.product-add-container input {
+    width: 20%;
+    font-size: 26px;
+}
+.product-add-container select {
+    width: 20%;
+    font-size: 20px;
+}
+.product-add-container p {
+    font-size: 20px;
+    font-weight: bold;
+}
+label.error {
+    color: red;
+}
