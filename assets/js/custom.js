@@ -60,11 +60,42 @@ $(document).ready(function(){
 
     // Change attribute on product page
     $(document).on('change','#productType', function() {
-        $('.product-type').addClass("no-display");
-        $('.' + this.value).removeClass("no-display");
+        $('.loader').show();
+        $.ajax({
+            url: window.baseUrl + 'src/Products/GetAttributes.php',
+            type: "POST",
+            data: {type_id: $(this).val()},
+            dataType: "json",
+            success: function(result){
+                let attrHtml = '';
+                let attributeLength = result.length;
+                $.each(result, function( index, value ) {
+                    debugger;
+                    attrHtml += "<label for='"+ value.code +"'>"+ value.label +":</label><br>";
+                    attrHtml += "<input class='require number' type='"+ value.type +"' id='"+ value.code +"' name='attribute["+ value.id +"]' value='' ><br>";
+                    if(attributeLength == index + 1) {
+                        attrHtml += "<p>" + value.message + "</p><br>";
+                    }
+                });
+
+                $('.product-type').html(attrHtml);
+                $('.product-type').removeClass("no-display")
+                setTimeout(function () {
+                    $('.loader').hide();
+                },1000)
+            }
+        });
     });
 
     //validate product add page
+    $.validator.addClassRules('require', {
+        required: true
+    });
+    $.validator.addClassRules('number', {
+        number : true,
+        min: 0
+    });
+
     $('#product_form').validate({ // initialize the plugin
         rules: {
             sku: {
@@ -80,52 +111,13 @@ $(document).ready(function(){
             },
             type: {
                 required: true
-            },
-            size: {
-                required: true,
-                number : true,
-                min: 0
-            },
-            weight: {
-                required: true,
-                number : true,
-                min: 0
-            },
-            height: {
-                required: true,
-                number : true,
-                min: 0
-            },
-            width: {
-                required: true,
-                number : true,
-                min: 0
-            },
-            length: {
-                required: true,
-                number : true,
-                min: 0
             }
         },
+
         messages :{
             price: {
                 number: 'Please enter a valid price.'
-            },
-            size: {
-                number: 'Please enter a valid size.'
-            },
-            weight: {
-                number: 'Please enter a valid weight.'
-            },
-            height: {
-                number: 'Please enter a valid height.'
-            },
-            width: {
-                number: 'Please enter a valid width.'
-            },
-            length: {
-                number: 'Please enter a valid length.'
-            },
+            }
         },
         submitHandler: function (form) {
             $('#message').removeClass();

@@ -1,6 +1,8 @@
 <?php
 $productList = new \App\Products\ProductList();
 $products = $productList->getProducts();
+$productTypes = $productList->getProductTypes();
+
 ?>
 <body>
 <div class="loader no-display">
@@ -43,7 +45,7 @@ $products = $productList->getProducts();
                     <div class="product-attr"><?php echo $product['price']; ?> $</div>
 
                     <?php $attributes =  $productList->getAttributeByProductId($product['product_id']); ?>
-                    <div class="product-attr"><?php echo $productList->attributeDisplay($attributes, $product['product_type']); ?></div>
+                    <div class="product-attr"><?php echo $productList->attributeDisplay($attributes); ?></div>
 
                 </li>
             <?php endforeach; ?>
@@ -71,36 +73,15 @@ $products = $productList->getProducts();
             <label for="price">Type Switcher:</label><br>
             <select name="type" id="productType">
                 <option value="">Type Switcher</option>
-                <option value="<?php echo $productList::TYPE_DVD; ?>">DVD</option>
-                <option value="<?php echo $productList::TYPE_BOOK; ?>">Book</option>
-                <option value="<?php echo $productList::TYPE_FURNITURE; ?>">Furniture</option>
+                <?php foreach($productTypes as $pType){ ?>
+                    <option value="<?php echo $pType[$productList::PRODUCT_TYPE_ID]; ?>"><?php echo $pType[$productList::PRODUCT_TYPE_TYPE]; ?></option>
+                <?php } ?>
             </select>
             <br>
 
-            <div class="dvd product-type">
-                <label for="size">Size:</label><br>
-                <input type="text" id="size" name="size" value="">
-                <p>Please provide size in MB.</p>
-                <br>
+            <div class="product-type">
             </div>
 
-            <div class="book product-type">
-                <label for="weight">Weight:</label><br>
-                <input type="text" id="weight" name="weight" value="">
-                <p>Please provide weight in Kg.</p><br>
-            </div>
-
-            <div class="furniture product-type">
-                <label for="height">Height:</label><br>
-                <input type="text" id="height" name="height" value=""><br>
-
-                <label for="width">Width:</label><br>
-                <input type="text" id="width" name="width" value=""><br>
-
-                <label for="length">Length:</label><br>
-                <input type="text" id="length" name="length" value="">
-                <p>Please provide dimensions in HxWxL format</p><br>
-            </div>
         </form>
     </div>
     <!--End Product Add Section-->

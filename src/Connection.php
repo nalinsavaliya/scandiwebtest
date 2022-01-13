@@ -22,7 +22,7 @@ class Connection
      * Connection constructor.
      */
     public function __construct() {
-        $this->con = new PDO('mysql:host=localhost;dbname=products', $this->user, $this->pass);
+        $this->con = new PDO('mysql:host=localhost;dbname=webfiaxf_scandiwebtest', $this->user, $this->pass);
         $this->con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
@@ -30,7 +30,7 @@ class Connection
      * @return string
      */
     public function getBaseUrl(){
-        return "http://localhost/test-exam/";
+        return "http://localhost/testexam/";
     }
 
 }

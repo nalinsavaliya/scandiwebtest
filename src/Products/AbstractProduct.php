@@ -5,10 +5,10 @@ use PDO;
 
 abstract class AbstractProduct extends \App\Connection
 {
-    //Product Type
-    const TYPE_DVD = 'dvd';
-    const TYPE_BOOK = 'book';
-    const TYPE_FURNITURE = 'furniture';
+    //productType table and fields
+    const PRODUCT_TYPE_TABLE = 'product_type';
+    const PRODUCT_TYPE_ID = 'id';
+    const PRODUCT_TYPE_TYPE = 'type';
 
     // Product table and fields
     const PRODUCT_TABLE = 'products';
@@ -19,10 +19,21 @@ abstract class AbstractProduct extends \App\Connection
     const PRODUCT_PRODUCT_TYPE = 'product_type';
 
     // Attribute table and fields
-    const PRODUCT_ATTRIBUTE_TABLE = 'attribute';
-    const ATTRIBUTE_ATTRIBUTE_ID = 'attribute_id';
+    CONST ATTRIBUTE_TABLE = 'attribute';
+    CONST ATTRIBUTE_ID = 'id';
+    CONST ATTRIBUTE_PRODUCT_TYPE = 'product_type';
+    CONST ATTRIBUTE_CODE = 'code';
+    CONST ATTRIBUTE_LABEL = 'label';
+    CONST ATTRIBUTE_TYPE = 'type';
+    CONST ATTRIBUTE_DISPLAY_PRE_FIX = 'display_pre_fix';
+    CONST ATTRIBUTE_DISPLAY_POST_FIX = 'display_post_fix';
+    CONST ATTRIBUTE_MESSAGE = 'message';
+
+    // Attribute value table and fields
+    const PRODUCT_ATTRIBUTE_TABLE = 'attribute_value';
+    const ATTRIBUTE_VALUE_ATTRIBUTE_ID = 'id';
     const ATTRIBUTE_PRODUCT_ID = 'product_id';
-    const ATTRIBUTE_ATTRIBUTE_LABEL = 'attribute_label';
+    const ATTRIBUTE_ATTRIBUTE_ID = 'attribute_id';
     const ATTRIBUTE_ATTRIBUTE_VALUE = 'attribute_value';
 
     /**
@@ -50,6 +61,34 @@ abstract class AbstractProduct extends \App\Connection
      */
     protected $type;
 
+    /**
+     * @var $attributes
+     */
+    protected $attributes;
+
+    /**
+     * @return array
+     */
+    public function getProductTypes()
+    {
+        $stmt = $this->con->prepare("SELECT * FROM " . self::PRODUCT_TYPE_TABLE);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    /**
+     * @return array
+     */
+    public function getAttributesByTypeId($typeId)
+    {
+
+        $stmt = $this->con->prepare("SELECT * FROM " . self::ATTRIBUTE_TABLE. " WHERE ". self::ATTRIBUTE_PRODUCT_TYPE . "=" . $typeId);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     /**
      * @return array
      */
@@ -108,33 +147,9 @@ abstract class AbstractProduct extends \App\Connection
     public function setAttributes($lastInsertId, $type){
         $result = [];
         try{
-            $size = $this->getSize();
-            $weight = $this->getWeight();
-            $height = $this->getHeight();
-            $width = $this->getWidth();
-            $length = $this->getLength();
-
-            $attributes = [];
-            if($type === self::TYPE_DVD){
-                $attributes = [
-                    'dvd' => $size
-                ];
-            }
-            if($type === self::TYPE_BOOK){
-                $attributes = [
-                    'weight' => $weight
-                ];
-            }
-            if($type === self::TYPE_FURNITURE){
-                $attributes = [
-                    'height' => $height,
-                    'width' => $width,
-                    'length' => $length,
-                ];
-            }
-
+            $attributes = $this->getAttributesData();
             foreach ($attributes as $key => $value){
-                $stmt = $this->con->prepare("INSERT INTO ". self::PRODUCT_ATTRIBUTE_TABLE ."(`".self::ATTRIBUTE_PRODUCT_ID."`, `".self::ATTRIBUTE_ATTRIBUTE_LABEL."`, `".self::ATTRIBUTE_ATTRIBUTE_VALUE."`) VALUES ('$lastInsertId', '$key', '$value')");
+                $stmt = $this->con->prepare("INSERT INTO ". self::PRODUCT_ATTRIBUTE_TABLE ."(`".self::ATTRIBUTE_PRODUCT_ID."`, `".self::ATTRIBUTE_ATTRIBUTE_ID."`, `".self::ATTRIBUTE_ATTRIBUTE_VALUE."`) VALUES ('$lastInsertId', '$key', '$value')");
                 $stmt->execute();
             }
 
@@ -154,7 +169,8 @@ abstract class AbstractProduct extends \App\Connection
      * @return array
      */
     public function getAttributeByProductId($productId){
-        $stmt = $this->con->prepare("SELECT *  FROM ".self::PRODUCT_ATTRIBUTE_TABLE." WHERE `".self::ATTRIBUTE_PRODUCT_ID."` = $productId");
+
+        $stmt = $this->con->prepare("SELECT * FROM ".self::PRODUCT_ATTRIBUTE_TABLE." JOIN ". self::ATTRIBUTE_TABLE . " ON ".self::PRODUCT_ATTRIBUTE_TABLE.".".self::ATTRIBUTE_ATTRIBUTE_ID." = ".self::ATTRIBUTE_TABLE.".".self::ATTRIBUTE_ID." WHERE `".self::ATTRIBUTE_PRODUCT_ID."` = ". $productId);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -165,31 +181,23 @@ abstract class AbstractProduct extends \App\Connection
      *
      * @return string
      */
-    public function attributeDisplay($attributes, $type){
+    public function attributeDisplay($attributes){
         $displayValue = '';
-        $preFix = '';
-        $totalValue = count($attributes);
-        $i = 1;
-        foreach ($attributes as $attribute){
 
-            if($type === self::TYPE_DVD){
-                $preFix = 'Size:';
-                $displayValue .= $attribute['attribute_value'] . " MB";
+        $preFix = '';
+        $attributeValue = [];
+        $postFix = '';
+        foreach ($attributes as $attribute){
+            $preFix = $attribute['display_pre_fix'];
+            $attributeValue[] = $attribute['attribute_value'];
+            $postFix = $attribute['display_post_fix'];
+            if($preFix === ''){
+                $preFix = $attribute['label'];
             }
-            if($type === self::TYPE_BOOK){
-                $preFix = 'Weight:';
-                $displayValue .= $attribute['attribute_value']. " KG";
-            }
-            if($type === self::TYPE_FURNITURE){
-                $preFix = 'Dimension:';
-                $displayValue .= $attribute['attribute_value'];
-                if($totalValue !== $i){
-                    $displayValue .= 'x';
-                }
-            }
-            $i++;
         }
-        return $preFix ." ". $displayValue;
+        $attributeValue = implode('x', $attributeValue);
+        $displayValue .= $preFix . ": ". $attributeValue . " ". $postFix;
+        return $displayValue;
     }
 
     /**
@@ -295,6 +303,22 @@ abstract class AbstractProduct extends \App\Connection
      */
     public function getSize() {
         return $this->size;
+    }
+
+    /**
+     * @param $value
+     *
+     * @return mixed
+     */
+    public function setAttributesData($value) {
+        return $this->attributes = $value;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAttributesData() {
+        return $this->attributes;
     }
 
     /**
