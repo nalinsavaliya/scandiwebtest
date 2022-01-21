@@ -70,7 +70,6 @@ $(document).ready(function(){
                 let attrHtml = '';
                 let attributeLength = result.length;
                 $.each(result, function( index, value ) {
-                    debugger;
                     attrHtml += "<label for='"+ value.code +"'>"+ value.label +":</label><br>";
                     attrHtml += "<input class='require number' type='"+ value.type +"' id='"+ value.code +"' name='attribute["+ value.id +"]' value='' ><br>";
                     if(attributeLength == index + 1) {
